@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock and Calendar Widget</title>
+    <style>
+        /* Ensures the widget is centered and the page has no extra margins */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: transparent; /* Makes the iframe background invisible */
+        }
+
+        /* --- PASTE YOUR CHOSEN STYLE HERE --- */
+        /* --- MODERN STYLE (DEFAULT) --- */
+        .widget-container {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f4f9;
+            width: 300px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: #333;
+        }
+        .clock {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            background-color: #fff;
+            padding: 10px 0;
+            border-radius: 8px;
+            letter-spacing: 2px;
+        }
+        .calendar { background-color: #fff; padding: 15px; border-radius: 8px; }
+        .month-year { font-size: 1.5rem; font-weight: 500; margin-bottom: 15px; }
+        .dates { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+        .dates span { padding: 8px; font-size: 0.9rem; border-radius: 50%; line-height: 1.5; }
+        .dates .day-header { font-weight: 700; color: #888; }
+        .dates .current-date { background-color: #007bff; color: #fff; font-weight: 700; }
+        /* --- END OF STYLE SECTION --- */
+
+    </style>
+</head>
+<body>
+
+    <div class="widget-container">
+        <div id="clock" class="clock"></div>
+        <div class="calendar">
+            <div class="month-year">
+                <span id="month"></span>
+                <span id="year"></span>
+            </div>
+            <div class="dates" id="dates"></div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript Logic for the Widget
+        (function() {
+            const clockElement = document.getElementById('clock');
+            const monthElement = document.getElementById('month');
+            const yearElement = document.getElementById('year');
+            const datesElement = document.getElementById('dates');
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+            function updateClock() {
+                const now = new Date();
+                let hours = now.getHours();
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                clockElement.textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
+            }
+
+            function updateCalendar() {
+                const now = new Date();
+                const currentYear = now.getFullYear();
+                const currentMonth = now.getMonth();
+                const today = now.getDate();
+
+                monthElement.textContent = monthNames[currentMonth];
+                yearElement.textContent = currentYear;
+
+                datesElement.innerHTML = '';
+
+                dayNames.forEach(day => {
+                    const dayElement = document.createElement('span');
+                    dayElement.textContent = day;
+                    dayElement.classList.add('day-header');
+                    datesElement.appendChild(dayElement);
+                });
+
+                const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+                for (let i = 0; i < firstDayOfMonth; i++) {
+                    datesElement.appendChild(document.createElement('span'));
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateSpan = document.createElement('span');
+                    dateSpan.textContent = day;
+                    if (day === today) {
+                        dateSpan.classList.add('current-date');
+                    }
+                    datesElement.appendChild(dateSpan);
+                }
+            }
+
+            updateClock();
+            updateCalendar();
+            setInterval(updateClock, 1000);
+        })();
+    </script>
+
+</body>
+</html>
